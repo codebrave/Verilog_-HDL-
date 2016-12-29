@@ -1,0 +1,182 @@
+@0
+C7_00_03_FE     //00       LDSP   3FEh
+87_00_00_06     //01       LDI  R6,  00000000
+00_00_00_00     //02   
+8A_06_00_07     //03       COPY R7,   R6
+8A_07_00_08     //04       COPY R8,   R7
+8A_08_00_09     //05       COPY R9,   R8
+8A_09_00_0A     //06       COPY R10,  R9
+8A_0A_00_0B     //07       COPY R11,  R10
+8A_0B_00_0C     //08       COPY R12,  R11
+C4_00_00_00	    //09       SET_I0  ;Set Intr. Enable Flag 0 
+94_0C_00_0C     //0A       INC   R12
+2E_00_00_00	    //0B       SET_FI0 ;Set Fast Intr. Enable Flag 0
+94_0C_00_0C     //0C       INC   R12
+2C_00_00_00	    //0D       SET_I1  ;Set Intr. Enable Flag 1 
+94_0C_00_0C     //0E       INC   R12
+2D_00_00_00	    //0F       SET_I2  ;Set Intr. Enable Flag 2 
+94_0C_00_0C     //10       INC   R12 
+C5_00_00_00	    //11       HALT
+
+@20
+94_0A_00_0A     //20       INC   R10
+3C_00_00_00     //21       RET_LR
+
+@23
+94_0A_00_0A     //23       INC   R10
+3A_00_00_02     //24       CALL_LR  @27h
+3C_00_00_00     //25       RET_LR
+
+@27
+94_0A_00_0A     //27       INC   R10
+3A_00_00_02     //28       CALL_LR  @29h
+3C_00_00_00     //29       RET_LR
+
+@2B
+94_0A_00_0A     //2B       INC   R10
+3C_00_00_00     //2C       RET_LR
+
+                               //**************
+@100                           //  Actual ISR 0
+                               //**************
+87_00_00_0F	    //100      LDI   R15,  100h
+00_00_01_00     //101
+87_00_00_0E	    //102      LDI   R14,  3FEh
+00_00_03_FE	    //103
+8D_0F_00_0E	    //104      OUT  [R14], R15  ; output "Pattern" to IO0[3FEh]
+8C_0E_00_00	    //105      IN    R0,  [R14] ; "loop back" the pattern into R0
+2E_00_00_00	    //106      SET_FI0          ;Set Fast Intr. Enable Flag 0 
+                //                          (Cannot interrupt own device)
+94_06_00_06     //107      INC   R6
+DB_06_02_00     //108      CMPi  R6, 2
+A2_00_00_01	    //109      JZ    +1
+C4_00_00_00	    //10A      SET_I0  ;Set Intr. Enable Flag 0 
+B5_00_00_00	    //10B      RETI                                                 
+
+                               //*******************
+@130                           //  Actual Fast ISR 0
+                               //*******************
+87_00_00_0F	     //130      LDI   R15,  130h
+00_00_01_30     //131
+87_00_00_0E	    //132      LDI   R14,  3F0h
+00_00_03_F0	    //133
+8D_0F_00_0E	    //134      OUT  [R14], R15       ; output "Pattern" to IO0[3FEh]
+8C_0E_00_01	    //135      IN    R1,  [R14]      ; r0 gets from IO_0 
+C4_00_00_00	    //136      SET_I0  ;Set Intr. Enable Flag 0 (should not interrupt during fast interrupt)
+2C_00_00_00	    //137      SET_I1  ;Set Intr. Enable Flag 1 (should not interrupt during fast interrupt) 
+2D_00_00_00	    //138      SET_I2  ;Set Intr. Enable Flag 2 (should not interrupt during fast interrupt)
+94_07_00_07     //139      INC   R7
+DB_07_02_00     //13A      CMPi  R7, 2
+A2_00_00_02	    //13B      JZ    +2
+2E_00_00_00	    //13C      SET_FI0 ;Set Fast Intr. Enable Flag 0 
+3D_00_00_00	    //13D      RETI_LR
+2F_00_00_00	    //13E      SET_FI1                          ;Set Fast Intr. Enable Flag 1  
+3D_00_00_00	    //13F      RETI_LR
+
+
+                               //*******************
+@150                           //  Actual Fast ISR 1
+                               //*******************
+87_00_00_0F	    //150      LDI   R15,  150h
+00_00_01_50     //151
+87_00_00_0E	    //152      LDI   R14,  3F2h
+00_00_03_F2	    //153
+8D_0F_00_0E	    //154      OUT  [R14], R15       ; output "Pattern" to IO1[3F0h]
+8C_0E_00_02	    //155      IN    R2,  [R14]      ; r1 gets from IO_1
+C4_00_00_00	    //156      SET_I0  ;Set Intr. Enable Flag 0 (should not interrupt during fast interrupt)
+2C_00_00_00	    //157      SET_I1  ;Set Intr. Enable Flag 1 (should not interrupt during fast interrupt) 
+2D_00_00_00     //158      SET_I2  ;Set Intr. Enable Flag 2 (should not interrupt during fast interrupt)    
+94_08_00_08     //139      INC   R8
+DB_08_02_00     //13A      CMPi  R8, 2
+A2_00_00_01	    //13B      JZ    +1
+2F_00_00_00	    //13E      SET_FI1 ;Set Fast Intr. Enable Flag 1 
+3D_00_00_00	    //13D      RETI_LR
+
+                               //*******************
+@170                           //  Actual Fast ISR 2
+                               //*******************
+87_00_00_0F	    //170      LDI   R15,  170h
+00_00_01_70     //171
+87_00_00_0E	    //172      LDI   R14,  3F4h
+00_00_03_F2	    //173
+8D_0F_00_0E	    //174      OUT  [R14], R15       ; output "Pattern" to IO2[3F0h]
+8C_0E_00_04	    //175      IN    R4,  [R14]      ; r4 gets from IO_2
+C4_00_00_00	    //176      SET_I0  ;Set Intr. Enable Flag 0 (should not interrupt during fast interrupt)
+2C_00_00_00	    //177      SET_I1  ;Set Intr. Enable Flag 1 (should not interrupt during fast interrupt) 
+2D_00_00_00     //178      SET_I2  ;Set Intr. Enable Flag 2 (should not interrupt during fast interrupt)   
+94_0A_00_0A     //179      INC   R10
+DB_0A_02_00     //17A      CMPi  R10, 2
+A2_00_00_05	    //17B      JZ    +5
+30_00_00_00	    //17C      SET_FI2               ;Set Fast Intr. Enable Flag 2
+87_00_00_0D	    //17D      LDI   R13,  20h
+00_00_00_20     //17E
+3B_0D_00_00     //17F      CALL_LR [R13]
+3A_00_00_02     //180      CALL_LR  @183h
+3D_00_00_00	    //181      RETI_LR 
+
+@183
+94_0A_00_0A     //183      INC   R10
+87_00_00_0D	    //184      LDI   R13,  22h
+00_00_00_23     //185
+3B_0D_00_00     //186      CALL_LR [R13]
+3C_00_00_00     //187      RET_LR
+
+
+                               //**************
+@190			               //  Actual ISR 1
+                               //**************
+87_00_00_0F	    //190      LDI   R15,  190h
+00_00_01_90     //191
+87_00_00_0E	    //192      LDI   R14,  3F6h
+00_00_03_F6	    //193
+8D_0F_00_0E	    //194      OUT  [R14], R15       ; output "Pattern" to IO1[3F6h]
+8C_0E_00_03	    //195      IN    R3,  [R14]      ; "loop back" the pattern into R3
+94_09_00_09     //196      INC   R9
+DB_09_02_00     //197      CMPi  R9, 2
+A2_00_00_02	    //198      JZ    +2
+2C_00_00_00	    //199      SET_I1                ;Set Intr. Enable Flag 1 
+B5_00_00_00	    //19A      RETI
+30_00_00_00	    //19B      SET_FI2               ;Set Fast Intr. Enable Flag 2
+94_0C_00_0C     //19C      INC   R12 
+B5_00_00_00	    //19D      RETI
+
+                               //**************
+@210			               //  Actual ISR 2
+                               //**************
+87_00_00_0F	    //210      LDI   R15,  100h
+00_00_02_10     //211
+87_00_00_0E	    //212      LDI   R14,  3F8h
+00_00_03_F6	    //213
+8D_0F_00_0E	    //214      OUT  [R14], R15       ; output "Pattern" to IO2[3F6h]
+8C_0E_00_05	    //215      IN    R5,  [R14]      ; "loop back" the pattern into R5
+94_0B_00_0B     //216      INC   R11
+DB_0B_02_00     //217      CMPi  R11, 2
+A2_00_00_01	    //218      JZ    +1
+2D_00_00_00	    //219      SET_I2  ;Set Intr. Enable Flag 2  
+B5_00_00_00	    //220      RETI
+
+// Interrupt Vector Addresses
+// Fast Interrupt 0
+@2A1 
+00_00_01_30     //ISR Address @130
+
+// Fast Interrupt 1
+@2A3
+00_00_01_50     //ISR Address @150
+
+// Fast Interrupt 2
+@2A5
+00_00_01_70     //ISR Address @170
+
+// Normal Interrupt 1
+@2A7
+00_00_01_90     //ISR Address @190
+
+// Normal Interrupt 2
+@2A9
+00_00_02_10     //ISR Address @210
+
+// Normal Interrupt 0
+@3FF            
+00_00_01_00	//ISR Address @100
+

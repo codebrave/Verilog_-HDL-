@@ -1,0 +1,63 @@
+@0
+C7_00_03_FE     //00            LDSP   3FEh
+C4_00_00_00	    //01            STI                           ;Set Intr. Enable Flag
+87_00_00_0F	    //02            LDI    R15, E0h
+00_00_00_E0	    //03
+87_00_00_0E	    //04            LDI    R14, 16                ;Used for loop counter
+00_00_00_10	    //05
+8B_0F_0E_00	    //06            EXCH   R15, R14               ;swap R15, R14
+87_00_00_0D	    //07            LDI    R13, 0A0A0A0Ah
+0A_0A_0A_0A	    //08
+9F_00_00_0D     //09            ORHI   R13, 88888888h
+88_88_88_88	    //0A
+C1_00_00_00	    //0B            STC                           ;set carry
+89_0D_00_0E	    //0C    c_loop: ST    [R14], R13              ;main loop to write
+9A_0D_00_0D	    //0D            ASR    R13                    ;  16 patterns from
+94_0E_00_0E	    //0E            INC    R14                    ;    0xE0 to 0xFF
+94_0E_00_0E	    //0F            INC    R14                    
+95_0F_00_0F	    //10            DEC    R15
+A3_FF_FF_FA	    //11            JNZ    c_loop
+87_00_00_0E	    //12            LDI    R14, FEh
+00_00_00_FE	    //13
+88_0E_00_00	    //14            LD     R0, [R14]
+80_00_0E_01	    //15            ADD    R1,  R0, R14
+8A_01_00_02	    //16            COPY   R2,  R1
+C5_00_00_00	    //17            HALT
+
+@FE
+89_AB_CD_EF
+01_23_45_67
+                               //**************
+@100			               //  Actual ISR
+                               //**************
+90_0F_00_00     //              PUSH  R15
+90_0E_00_00     //              PUSH  R14
+
+87_00_00_0F	    //              LDI   R15,  CC33AA55h
+CC_33_AA_55     //
+9F_00_00_0F     //              ORHI  R15,  55AA33CCh
+55_AA_33_CC	    //  
+87_00_00_0E	    //              LDI   R14,  3FEh
+00_00_03_FE	    //
+8D_0F_00_0E	    //              OUT  [R14], R15       ; output "Pattern" to IO[3FEh]
+8C_0E_00_03	    //              IN    R3,  [R14]      ; "loop back" the pattern into R3
+87_00_00_04	    //              LDI   R4,   02h
+00_00_00_02	    //
+87_00_00_05	    //              LDI   R5,   03h
+00_00_00_03	    //
+87_00_00_06	    //              LDI   R6,   04h
+00_00_00_04	    //
+87_00_00_07	    //              LDI   R7,   05h
+00_00_00_05	    //
+80_03_04_08	    //              ADD   R8,   R3, R4    ; R8 gets value read from IO plus 2
+80_05_06_09	    //              ADD   R9,   R5, R6
+80_06_07_0A	    //              ADD   R10,  R6, R7
+80_07_09_0B	    //              ADD   R11,  R7, R9
+
+91_00_00_0E     //              POP   R14
+91_00_00_0F     //              POP   R15
+B5_00_00_00	    //              RETI
+
+
+@3FF            //Interrupt Vector
+00_00_01_00	//ISR Address @100

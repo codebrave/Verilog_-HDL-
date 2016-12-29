@@ -1,0 +1,82 @@
+@0
+87_00_00_00  //ldi R0, #E0
+00_00_00_E0
+31_00_00_00  //vector load, VR0, [r0]
+D0_00_02_00  // ADDi  R00,  #2
+31_00_00_01  //vector load, VR1, [r0]
+07_00_00_02  //v_INC, Rs2=VR0, dest=VR2
+08_00_01_03  //V_dec, Rs2=VR1, dest=VR3
+09_02_03_04  //V_mul, Rs1=Vr2, Rs2=Vr3, dest=Vr4
+D0_00_0E_00  //ADDI r00, #14
+31_00_00_06  //vector load, Vr6, [r0] (to allow easy division)
+D0_00_09_00
+31_00_00_07
+0A_06_07_08  //V_div. Rs1=Vr6, Rs2=Vr7, dest=Vr8
+0B_04_05_0A  //V_add, Rs1=Vr4, Rs2=Vr5, dest=VrA
+0C_06_07_0B  //V_sub, Rs1=Vr6, Rs2=Vr7, dest=VrB 
+0D_0A_07_0C  //V_and, Rs1=VrA, Rs2=Vr7, dest=VrC
+0E_06_07_0D  //V_or, rs1=Vr6, Rs2=Vr7, Dest=VrD
+0F_0A_07_0E  //V_xor, Rs1=VrA, Rs2=Vr7, Dest=VrE
+10_00_0A_0F  //V_not, Rs2=VrA, dest=Vr0F
+11_00_0A_10  //V_neg, Rs2=VrA, dest=vr10
+12_00_0B_11  //V_lshl,Rs2=VrB, dest = Vr11
+13_00_0A_12  //V_lshr,Rs2=VrA, dest = Vr12
+14_00_07_13  //V-ashl, Rs2=vr7, dest=Vr13
+15_00_07_14  //V_ashr, Rs2=Vr9, dest=Vr14
+16_00_00_15  //V_zero, dest=Vr15
+33_00_00_16  //V_ones, dest=Vr16 
+19_0A_07_17  //V_nand, Rs1=VrA, Rs2=Vr7, dest=Vr17
+1A_06_07_18  //V_nor, rs1=Vr6, Rs2=Vr8, Dest=Vr18
+1B_0A_07_19  //V_xnor, Rs1=Vr9, Rs2=Vr7, Dest=Vr19
+1C_00_04_1A  //V-ror, Rs2=vR4, dest=Vr1A
+1D_00_08_1B  //V_rol, Rs2=Vr8, dest=Vr1B
+17_00_00_1C  //v_passR, rs1=Vr0, dest=Vr1C
+18_00_01_1D  //V_passS, rs2=Vr1, dest=Vr1D
+87_00_00_00  //ldr R0, #E0
+00_00_00_E0
+32_18_00_00  //V_store [R0], VR18   
+C5_1F_1F_1F
+
+
+@E0
+AB_AB_AB_AB
+15_15_15_15
+96_96_96_96
+C4_C4_C4_C4
+88_77_66_55
+99_DD_EE_44
+12_34_56_78
+90_AB_CD_EF
+
+66_55_44_33
+87_65_43_21
+11_11_11_11
+33_45_66_78
+AB_55_CD_66
+33_55_77_99
+22_44_66_88
+19_28_37_46
+
+77_78_54_57
+FF_AA_DE_56
+67_09_7D_56
+67_55_54_ED
+44_55_66_77
+88_99_00_AA
+74_05_96_45 
+00_00_6F_FE 
+
+00_00_90_90
+00_00_08_66
+88_45_78_FE
+00_06_56_99
+56_67_78_88
+00_00_00_00
+89_56_AB_C4
+00_00_00_04 
+59_6d_d4_53
+
+
+
+
+  
